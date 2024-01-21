@@ -1,20 +1,86 @@
-﻿// 6.3PICNIC.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
-//
+﻿#include <iostream>
 
-#include <iostream>
+using namespace std;
+
+/*
+	<놓쳤던 부분들>
+	1. recursive 도중 visited == 0 일 때 depth를 내려가지 않은 것
+	2. m == 0  인 case를 생각하지 못함
+	3. 짝궁이 없는 case를 생각하지 못함
+*/
+
+int C, n, m;
+int N = 10;
+
+void init_jjak(int jjak[][10], int visited[10]) {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			jjak[i][j] = 0;
+		}
+		visited[i] = 0;
+	}
+}
+
+void get_input(int jjak[][10], int visited[10]) {
+	cin >> n >> m;
+	int a = 0;
+	int b = 0;
+
+	for (int i = 0; i < m; i++) {
+		cin >> a >> b;
+		if (a != b) {
+			jjak[a][b] = 1;
+			jjak[b][a] = 1;
+			visited[a] = 1;
+			visited[b] = 1;
+		}
+	}
+}
+
+// 3.remaining
+int count(int jjak[][10], int visited[10], int student, int remaining) {
+	int cnt = 0;
+
+	if (student == N) {
+		if (remaining == 0)
+			return 1;
+		return 0;
+	}
+
+	if (visited[student] == 1) {
+		for (int i = 0; i < N; i++) {
+			if (jjak[student][i] == 1 && visited[i] == 1) {
+				visited[student] = 0;
+				visited[i] = 0;
+
+				cnt += count(jjak, visited, student + 1, remaining -2);
+
+				visited[student] = 1;
+				visited[i] = 1;
+			}
+		}
+	}
+	// 1.
+	else {
+		cnt += count(jjak, visited, student + 1, remaining);
+	}
+
+	return cnt;
+}
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	int jjak[10][10];
+	int visited[10];
+	cin >> C;
+
+	for (int i = 0; i < C; i++) {
+		init_jjak(jjak, visited);
+		get_input(jjak, visited);
+		// 2.
+		if (m == 0)
+			cout << 0 << endl;
+		else
+			cout << count(jjak, visited, 0, n) << endl;
+	}
 }
-
-// 프로그램 실행: <Ctrl+F5> 또는 [디버그] > [디버깅하지 않고 시작] 메뉴
-// 프로그램 디버그: <F5> 키 또는 [디버그] > [디버깅 시작] 메뉴
-
-// 시작을 위한 팁: 
-//   1. [솔루션 탐색기] 창을 사용하여 파일을 추가/관리합니다.
-//   2. [팀 탐색기] 창을 사용하여 소스 제어에 연결합니다.
-//   3. [출력] 창을 사용하여 빌드 출력 및 기타 메시지를 확인합니다.
-//   4. [오류 목록] 창을 사용하여 오류를 봅니다.
-//   5. [프로젝트] > [새 항목 추가]로 이동하여 새 코드 파일을 만들거나, [프로젝트] > [기존 항목 추가]로 이동하여 기존 코드 파일을 프로젝트에 추가합니다.
-//   6. 나중에 이 프로젝트를 다시 열려면 [파일] > [열기] > [프로젝트]로 이동하고 .sln 파일을 선택합니다.
